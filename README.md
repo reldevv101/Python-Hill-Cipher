@@ -76,6 +76,24 @@ py -3 main.py --size 250 --mode both --workers 4 --progress
 Progress bar cocok untuk demonstrasi. Matikan `--progress` saat mencatat waktu
 benchmark agar output terminal tidak memengaruhi pengukuran.
 
+## Desktop GUI
+
+Versi desktop menyediakan input ukuran, seed, mode, dan jumlah worker. GUI juga
+menampilkan progress bar, waktu, checksum, speedup, serta tabel matriks `A`,
+`B`, dan hasil `A x B` untuk ukuran sampai `10 x 10`.
+
+Jalankan dari folder proyek:
+
+```powershell
+py -3 main_gui.py
+```
+
+Gunakan ukuran `3` sampai `10` ketika ingin menunjukkan seluruh matriks kepada
+dosen. Untuk benchmark besar, GUI tetap menghitung hasil tetapi tidak merender
+tabel matriks agar tampilan tetap responsif. Mode MPI dua komputer tetap
+dijalankan dari konsol melalui `mpi_benchmark.py` karena membutuhkan pemilihan
+host dan kredensial MS-MPI.
+
 Opsi yang tersedia:
 
 - `--size`: ukuran matriks persegi (default: `100`)
@@ -225,6 +243,7 @@ lebih dari sekali karena waktu dapat berubah akibat aktivitas komputer lain.
 
 ```text
 main.py               entry point praktis
+main_gui.py           entry point desktop GUI
 mpi_benchmark.py      entry point benchmark MPI
 src/matrix_benchmark/ kode aplikasi
 tests/                pengujian dasar

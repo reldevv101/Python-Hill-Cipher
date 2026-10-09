@@ -114,6 +114,25 @@ py -3 main.py --size 100 --mode both --workers 4 --progress
 Progress bar berguna saat demonstrasi. Matikan saat mencatat benchmark resmi
 karena output terminal menambah sedikit overhead waktu.
 
+## Antarmuka grafis
+
+GUI dibuat dengan Tkinter, pustaka antarmuka desktop bawaan Python sehingga
+tidak memerlukan dependency tambahan. GUI tidak menghitung ulang dengan
+algoritma berbeda; ia memanggil fungsi sequential dan parallel yang sama dengan
+versi konsol. Perhitungan dijalankan pada background thread agar antarmuka tetap
+responsif dan progress bar dapat diperbarui.
+
+Tiga tabel pada GUI memiliki fungsi berikut:
+
+- **Matriks A**: input pertama yang dibangkitkan dari seed.
+- **Matriks B**: input kedua yang dibangkitkan dari seed.
+- **Hasil A x B**: hasil perkalian yang dipakai untuk checksum dan validasi.
+
+Tabel hanya ditampilkan untuk ukuran sampai `10 x 10`. Batas ini menjaga
+tampilan tetap mudah dibaca; benchmark matriks besar tetap dapat dijalankan.
+Distribusi MPI dua komputer tetap dipertahankan melalui konsol karena proses
+peluncuran membutuhkan nama host dan kredensial jaringan.
+
 ## Mengukur performa
 
 Program memakai `perf_counter()` untuk sequential/parallel dan `MPI.Wtime()`

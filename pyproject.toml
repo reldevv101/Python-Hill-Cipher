@@ -14,6 +14,7 @@ distributed = ["mpi4py>=4.0"]
 
 [project.scripts]
 matrix-benchmark = "matrix_benchmark.cli:main"
+matrix-benchmark-gui = "matrix_benchmark.gui:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
