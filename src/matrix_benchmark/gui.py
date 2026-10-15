@@ -7,8 +7,10 @@ import queue
 import random
 import threading
 import tkinter as tk
-from tkinter import messagebox, ttk
+from pathlib import Path
+from tkinter import filedialog, messagebox, ttk
 
+from .matrix_export import export_matrices
 from .parallel import timed_parallel_multiply
 from .sequential import Matrix, matrix_checksum, timed_multiply
 
@@ -40,6 +42,7 @@ class MatrixBenchmarkApp(tk.Tk):
         self.checksum_var = tk.StringVar(value="-")
         self.queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.matrix_tables: dict[str, ttk.Treeview] = {}
+        self.last_data: dict[str, object] | None = None
 
         self._build_layout()
         self.after(50, self._process_messages)
@@ -73,9 +76,13 @@ class MatrixBenchmarkApp(tk.Tk):
         self._add_field(controls, "Worker", self.workers_var, 6)
 
         self.start_button = ttk.Button(controls, text="Mulai Benchmark", command=self.start)
-        self.start_button.grid(row=2, column=0, columnspan=4, sticky="ew", pady=(12, 0))
+        self.start_button.grid(row=2, column=0, columnspan=3, sticky="ew", pady=(12, 0))
+        self.save_button = ttk.Button(
+            controls, text="Simpan Matriks", command=self.save_matrices, state="disabled"
+        )
+        self.save_button.grid(row=2, column=3, columnspan=3, sticky="ew", pady=(12, 0), padx=(8, 0))
         ttk.Button(controls, text="Reset", command=self.reset).grid(
-            row=2, column=4, columnspan=4, sticky="ew", pady=(12, 0), padx=(8, 0)
+            row=2, column=6, columnspan=2, sticky="ew", pady=(12, 0), padx=(8, 0)
         )
 
         body = ttk.Frame(outer)
@@ -203,6 +210,9 @@ class MatrixBenchmarkApp(tk.Tk):
                     "done",
                     {
                         "size": size,
+                        "seed": seed,
+                        "mode": mode,
+                        "workers": workers,
                         "matrix_a": matrix_a,
                         "matrix_b": matrix_b,
                         "result": result,
@@ -235,6 +245,7 @@ class MatrixBenchmarkApp(tk.Tk):
         self.after(50, self._process_messages)
 
     def _show_result(self, data: dict[str, object]) -> None:
+        self.last_data = data
         sequential = data["sequential"]
         parallel = data["parallel"]
         speedup = data["speedup"]
@@ -245,6 +256,7 @@ class MatrixBenchmarkApp(tk.Tk):
         self.progress_var.set(100)
         self.status_var.set("Selesai. Hasil sequential dan parallel tervalidasi bila keduanya dijalankan.")
         self.start_button.configure(state="normal")
+        self.save_button.configure(state="normal")
 
         if int(data["size"]) <= DISPLAY_LIMIT:
             self._populate_table("Matriks A", data["matrix_a"])  # type: ignore[arg-type]
@@ -253,6 +265,61 @@ class MatrixBenchmarkApp(tk.Tk):
         else:
             for label in self.matrix_tables:
                 self._clear_table(label, f"Tidak ditampilkan: ukuran lebih dari {DISPLAY_LIMIT} x {DISPLAY_LIMIT}.")
+
+    def save_matrices(self) -> None:
+        """Ask for a format and save the matrices from the latest completed run."""
+
+        if self.last_data is None:
+            messagebox.showwarning("Belum ada hasil", "Jalankan benchmark terlebih dahulu.")
+            return
+
+        size = int(self.last_data["size"])
+        filename = filedialog.asksaveasfilename(
+            title="Simpan Matriks A, B, dan A x B",
+            defaultextension=".xlsx",
+            initialfile=f"matriks_n{size}.xlsx",
+            filetypes=(
+                ("Excel Workbook", "*.xlsx"),
+                ("CSV (tiga file)", "*.csv"),
+            ),
+        )
+        if not filename:
+            return
+
+        sequential = self.last_data["sequential"]
+        parallel = self.last_data["parallel"]
+        speedup = self.last_data["speedup"]
+        metadata = {
+            "Ukuran matriks": f"{size} x {size}",
+            "Seed": self.last_data["seed"],
+            "Mode": self.last_data["mode"],
+            "Worker": self.last_data["workers"],
+            "Waktu sequential (detik)": sequential if sequential is not None else "Tidak dijalankan",
+            "Waktu parallel (detik)": parallel if parallel is not None else "Tidak dijalankan",
+            "Speedup": speedup if speedup is not None else "-",
+            "Checksum": self.last_data["checksum"],
+        }
+        try:
+            outputs = export_matrices(
+                Path(filename),
+                self.last_data["matrix_a"],  # type: ignore[arg-type]
+                self.last_data["matrix_b"],  # type: ignore[arg-type]
+                self.last_data["result"],  # type: ignore[arg-type]
+                metadata,
+            )
+        except OSError as error:
+            messagebox.showerror("Gagal menyimpan", f"File tidak dapat disimpan.\n{error}")
+            return
+        except ValueError as error:
+            messagebox.showerror("Format tidak valid", str(error))
+            return
+
+        if len(outputs) == 1:
+            message = f"Workbook Excel berhasil disimpan:\n{outputs[0]}"
+        else:
+            message = "Tiga file CSV berhasil disimpan:\n" + "\n".join(str(path) for path in outputs)
+        self.status_var.set("Matriks berhasil disimpan.")
+        messagebox.showinfo("Simpan Matriks", message)
 
     def _populate_table(self, label: str, matrix: Matrix) -> None:
         table = self.matrix_tables[label]
@@ -274,6 +341,7 @@ class MatrixBenchmarkApp(tk.Tk):
         table.insert("", "end", values=(message,))
 
     def reset(self) -> None:
+        self.last_data = None
         self.size_var.set("3")
         self.seed_var.set("7")
         self.mode_var.set("both")
@@ -284,6 +352,7 @@ class MatrixBenchmarkApp(tk.Tk):
         self.checksum_var.set("-")
         self.progress_var.set(0)
         self.status_var.set("Siap dijalankan.")
+        self.save_button.configure(state="disabled")
         for label in self.matrix_tables:
             self._clear_table(label, "Belum ada hasil.")
 

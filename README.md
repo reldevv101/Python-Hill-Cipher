@@ -1,8 +1,9 @@
 # Matrix Computation Benchmark
 
 Fondasi proyek untuk membandingkan kinerja komputasi matriks. Tahap ini berisi
-perkalian matriks **sequential**, **parallel satu komputer**, dan fondasi
-**distributed computing dengan MPI**. GUI belum dibuat.
+perkalian matriks **sequential**, **parallel satu komputer**, dan
+**distributed computing dengan MPI**. Versi desktop juga tersedia untuk
+demonstrasi matriks dan benchmark lokal.
 
 Penjelasan konsep, algoritma, dan bahan laporan tersedia di
 [docs/project-concepts.md](docs/project-concepts.md).
@@ -90,9 +91,23 @@ py -3 main_gui.py
 
 Gunakan ukuran `3` sampai `10` ketika ingin menunjukkan seluruh matriks kepada
 dosen. Untuk benchmark besar, GUI tetap menghitung hasil tetapi tidak merender
-tabel matriks agar tampilan tetap responsif. Mode MPI dua komputer tetap
+dalam tabel agar tampilan tetap responsif. Tombol **Simpan Matriks** tetap dapat
+menyimpan seluruh isi matriks, termasuk saat ukuran lebih dari `10 x 10`. Mode MPI dua komputer tetap
 dijalankan dari konsol melalui `mpi_benchmark.py` karena membutuhkan pemilihan
 host dan kredensial MS-MPI.
+
+### Menyimpan matriks dari GUI
+
+Setelah benchmark selesai, klik **Simpan Matriks**. Pilih salah satu format:
+
+- **Excel Workbook (`.xlsx`)**: satu file dengan sheet `Matriks A`, `Matriks B`,
+  `Hasil A x B`, dan `Informasi` (konfigurasi serta waktu benchmark).
+- **CSV (`.csv`)**: program menyimpan tiga file terpisah dengan akhiran
+  `_A.csv`, `_B.csv`, dan `_AxB.csv`. Pemisahan ini membuat setiap matriks
+  tetap mudah dibuka sebagai tabel di Excel.
+
+Ekspor menyimpan seluruh matriks yang dihasilkan, bukan hanya bagian `10 x 10`
+yang ditampilkan pada GUI.
 
 Opsi yang tersedia:
 
