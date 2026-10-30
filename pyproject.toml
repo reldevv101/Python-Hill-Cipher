@@ -15,6 +15,7 @@ distributed = ["mpi4py>=4.0"]
 [project.scripts]
 matrix-benchmark = "matrix_benchmark.cli:main"
 matrix-benchmark-gui = "matrix_benchmark.gui:main"
+hill-cipher-mpi = "matrix_benchmark.hill_cipher.mpi_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
