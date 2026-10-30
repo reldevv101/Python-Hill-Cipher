@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from matrix_benchmark.hill_cipher.mpi_cli import main
+from hill_cipher_benchmark.mpi_cli import main
 
 
 if __name__ == "__main__":

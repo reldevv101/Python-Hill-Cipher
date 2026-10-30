@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from matrix_benchmark.hill_cipher import decrypt, encrypt
-from matrix_benchmark.hill_cipher.parallel import (
+from hill_cipher_benchmark import decrypt, encrypt
+from hill_cipher_benchmark.parallel import (
     parallel_decrypt,
     parallel_encrypt,
     split_blocks,

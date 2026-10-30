@@ -19,7 +19,7 @@ class HillCipherDistributedTests(unittest.TestCase):
         script = dedent(
             """
             from mpi4py import MPI
-            from matrix_benchmark.hill_cipher.distributed import distributed_decrypt, distributed_encrypt
+            from hill_cipher_benchmark.distributed import distributed_decrypt, distributed_encrypt
 
             comm = MPI.COMM_WORLD
             rank = comm.Get_rank()

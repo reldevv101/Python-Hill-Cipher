@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from matrix_benchmark.hill_cipher import decrypt, encrypt, inverse_key, validate_key
-from matrix_benchmark.hill_cipher.alphabet import normalize_plaintext, numbers_to_text, text_to_numbers
+from hill_cipher_benchmark import decrypt, encrypt, inverse_key, validate_key
+from hill_cipher_benchmark.alphabet import normalize_plaintext, numbers_to_text, text_to_numbers
 
 
 class HillCipherAlphabetTests(unittest.TestCase):

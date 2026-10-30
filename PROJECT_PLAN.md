@@ -34,7 +34,12 @@ Proyek ini dikembangkan bertahap dari **Python Matrix Computation** menjadi apli
 
 ## Audit awal repo: komponen yang ditemukan
 
-Repo saat ini memuat `src/matrix_benchmark/` dengan `sequential.py`, `parallel.py`, `distributed.py`, `cli.py`, `gui.py`, `reporting.py`, `matrix_export.py`, dan `presentation.py`; entry point `main.py`, `main_gui.py`, `mpi_benchmark.py`; tes untuk sequential, parallel, distributed helpers, reporting, dan ekspor; serta panduan di `README.md` dan `docs/`. Ada hasil benchmark dan ekspor di `results/`. Pada saat inspeksi, `git status --short` tidak menampilkan perubahan.
+Kode matrix computation lama dikelompokkan di `legacy/matrix_computation/`:
+paket `src/matrix_benchmark/`, entry point matrix, tes, serta panduan lama.
+Paket aktif Hill Cipher berada di `src/hill_cipher_benchmark/`, dengan tes
+khusus di `tests/` dan entry point MPI `hill_cipher_mpi.py`. Berkas lama di
+`results/` dipertahankan pada lokasi semula. Catatan audit awal di bagian ini
+telah diselaraskan dengan susunan repository terbaru.
 
 - **Berpotensi dipakai ulang setelah peninjauan:** pola timer, pelaporan CSV yang dapat dikonfigurasi, format presentasi, pola pembagian tugas/hasil dan pengaturan worker, serta kerangka CLI/GUI.
 - **Perlu diadaptasi:** pembagian baris menjadi pembagian blok pesan; skema CSV; antarmuka; dokumentasi; dan integrasi MPI agar menerima input pesan/kunci secara konsisten.
@@ -45,17 +50,22 @@ Audit ini hanya inventaris awal, bukan keputusan desain final. Periksa isi lengk
 
 ## Arsitektur sasaran (rancangan awal)
 
-Pertahankan paket sumber di `src/` dan pisahkan domain cipher dari orkestrasi benchmark. Nama modul berikut adalah usulan yang harus disesuaikan dengan struktur aktual saat implementasi dimulai:
+Pertahankan paket aktif di `src/hill_cipher_benchmark/` dan pisahkan domain
+cipher dari kode matrix lama yang disimpan di `legacy/matrix_computation/`.
+Modul aktif meliputi:
 
-- `hill_cipher/alphabet.py`: alfabet dan normalisasi/padding yang terdokumentasi.
-- `hill_cipher/key.py`: validasi matriks dan invers modular.
-- `hill_cipher/core.py`: transformasi blok sequential, enkripsi, dan dekripsi.
-- `hill_cipher/parallel.py`: pembagian blok pesan dan penggabungan hasil `multiprocessing`.
-- `hill_cipher/distributed.py`: orkestrasi MPI atas blok pesan.
-- `benchmark.py` dan `reporting.py`: pengukuran yang konsisten dan keluaran CSV.
+- `alphabet.py`: alfabet dan normalisasi/padding.
+- `key.py`: validasi matriks dan invers modular.
+- `core.py`: transformasi blok sequential, enkripsi, dan dekripsi.
+- `parallel.py`: pembagian blok pesan dan penggabungan hasil `multiprocessing`.
+- `distributed.py`: orkestrasi MPI atas blok pesan.
+- `mpi_cli.py`: entry point konsol untuk operasi MPI.
+- `benchmark.py` dan `reporting.py`: modul yang direncanakan untuk pengukuran dan keluaran CSV.
 - Entry point CLI terlebih dahulu; GUI dan ekspor hasil diperbarui pada fase tersendiri.
 
-Jangan memindahkan atau menghapus implementasi benchmark matriks secara massal. Pilih salah satu strategi migrasi yang paling aman setelah audit dependensi: menambah paket cipher berdampingan sementara, atau melakukan migrasi bertahap dengan entry point dan tes lama tetap terjaga selama transisi. Catat keputusan dan alasan sebelum perubahan kode.
+Kode matrix computation dipindahkan tanpa mengubah isi file ke folder arsip.
+Entry point dan tes lamanya tetap tersedia di sana selama dibutuhkan. File hasil
+di `results/` tidak dipindah atau ditulis ulang.
 
 ## Fase pengerjaan
 

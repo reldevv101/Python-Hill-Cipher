@@ -16,9 +16,10 @@ proyek ini; cipher ini **bukan metode enkripsi modern yang aman**.
 | Perbandingan benchmark dan ekspor CSV khusus Hill Cipher | Belum dibuat |
 | GUI Hill Cipher | Belum dibuat |
 
-GUI, CLI, dan file hasil benchmark matriks yang masih ada di repository adalah
-komponen lama. `main.py`, `main_gui.py`, dan `mpi_benchmark.py` tetap membuka
-aplikasi benchmark matriks lama. Gunakan `hill_cipher_mpi.py` untuk Hill Cipher.
+Kode matrix computation lama disimpan di `legacy/matrix_computation/` dan tidak
+menjadi bagian dari aplikasi Hill Cipher. `results/` tetap berisi hasil matriks
+lama dan dipertahankan di lokasi semula. Gunakan `hill_cipher_mpi.py` untuk
+menjalankan Hill Cipher melalui MPI.
 
 ## Aturan Hill Cipher saat ini
 
@@ -58,7 +59,7 @@ mpiexec -n 2 py -3 -m mpi4py.bench helloworld
 Buka PowerShell pada folder proyek:
 
 ```powershell
-cd "C:\Users\USER\Documents\Codex\Python-Matrix-Computation"
+cd "C:\Users\USER\Documents\Codex\Python-Hill-Cipher"
 ```
 
 Enkripsi contoh dengan empat rank:
@@ -87,7 +88,7 @@ proyek pada path kerja yang sesuai, versi Python, MS-MPI, dan `mpi4py` yang
 tersedia. Format perintah MS-MPI:
 
 ```powershell
-mpiexec /hosts 2 NAMA_MASTER 1 NAMA_WORKER 1 /wdir "C:\MPI\Python-Matrix-Computation" py -3 hill_cipher_mpi.py --action encrypt --text "Hello!" --key 3,3,2,5
+mpiexec /hosts 2 NAMA_MASTER 1 NAMA_WORKER 1 /wdir "C:\MPI\Python-Hill-Cipher" py -3 hill_cipher_mpi.py --action encrypt --text "Hello!" --key 3,3,2,5
 ```
 
 Ganti nama komputer dan path sesuai konfigurasi Anda. Pengujian MPI yang telah
@@ -106,12 +107,12 @@ ciphertext sequential dan multiprocessing:
 
 ```powershell
 $env:PYTHONPATH = "src"
-py -3 -c "from matrix_benchmark.hill_cipher import encrypt; from matrix_benchmark.hill_cipher.parallel import parallel_encrypt; key=((3,3),(2,5)); print('Sequential:', encrypt('Hello!', key)); print('Parallel:', parallel_encrypt('Hello!', key, workers=2))"
+py -3 -c "from hill_cipher_benchmark import encrypt; from hill_cipher_benchmark.parallel import parallel_encrypt; key=((3,3),(2,5)); print('Sequential:', encrypt('Hello!', key)); print('Parallel:', parallel_encrypt('Hello!', key, workers=2))"
 ```
 
 Kedua metode seharusnya menghasilkan `HIOZHN`. Fungsi `decrypt` dan
-`parallel_decrypt` juga tersedia di `matrix_benchmark.hill_cipher` dan
-`matrix_benchmark.hill_cipher.parallel`. Antarmuka konsol untuk menjalankan dan
+`parallel_decrypt` juga tersedia di `hill_cipher_benchmark` dan
+`hill_cipher_benchmark.parallel`. Antarmuka konsol untuk menjalankan dan
 membandingkan ketiga metode dalam satu benchmark akan ditambahkan pada tahap
 berikutnya.
 
@@ -133,13 +134,14 @@ Isi `results/` yang sudah ada adalah keluaran benchmark matriks lama. File itu
 tidak berisi hasil Hill Cipher. Pencatatan benchmark Hill Cipher ke CSV dan
 ekspor hasil enkripsi/dekripsi belum diterapkan.
 
-Komponen benchmark matriks tetap dipertahankan selama transisi:
+Kode lama dikelompokkan terpisah agar fokus repository tetap pada Hill Cipher.
+Untuk menjalankan matrix benchmark lama, buka folder arsip dan ikuti README
+arsip tersebut. Berkas hasil yang ada tetap berada di `results/`.
 
 ```text
-hill_cipher_mpi.py                 entry point Hill Cipher MPI
-src/matrix_benchmark/hill_cipher/  algoritma sequential, parallel, dan MPI
-tests/                             tes Hill Cipher dan tes matrix lama
-main.py                            entry point benchmark matriks lama
-main_gui.py                        GUI benchmark matriks lama
-mpi_benchmark.py                   entry point MPI benchmark matriks lama
+hill_cipher_mpi.py                  entry point Hill Cipher MPI
+src/hill_cipher_benchmark/          algoritma sequential, parallel, dan MPI
+tests/                              tes Hill Cipher
+legacy/matrix_computation/          kode, tes, dan dokumentasi matrix lama
+results/                            hasil matrix lama, dipertahankan
 ```
